@@ -199,7 +199,7 @@
         }
 
         try {
-          if (beforeEach(files[fileIndex]) != false) {
+          opts.beforeEach(files[fileIndex], function(){
             if (fileIndex === files_count) return;
             var reader = new FileReader(),
                 max_file_size = 1048576 * opts.maxfilesize;
@@ -216,9 +216,7 @@
             }
             reader.onloadend = send;
             reader.readAsBinaryString(files[fileIndex]);
-          } else {
-            filesRejected++;
-          }
+          });
         } catch (err) {
           // Remove from queue
           processingQueue.forEach(function(value, key) {
@@ -254,7 +252,6 @@
         } else {
           builder = getBuilder(file.name, e.target.result, mime, boundary);
         }
-
         upload.index = index;
         upload.file = file;
         upload.downloadStartTime = start_time;
@@ -262,7 +259,6 @@
         upload.currentProgress = 0;
         upload.startData = 0;
         upload.addEventListener("progress", progress, false);
-
         xhr.open("POST", opts.url, true);
         xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary);
         // Add headers
