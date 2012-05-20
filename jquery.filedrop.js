@@ -96,12 +96,15 @@
           builder = '';
 
       if (opts.data) {
-        var params = $.param(opts.data).split(/&/);
-
-        $.each(params, function() {
-          var pair = this.split(/=/, 2);
-          var name = decodeURI(pair[0]);
-          var val = decodeURI(pair[1]);
+        var param_data = {};
+        $.each(opts.data, function(value, key) {
+          if(typeof value == "function") {
+            param_data[key] = value(filename, mime);
+          } else {
+            param_data[key] = value;
+          }
+        });
+        $.each(param_data, function(val, name) {
           builder += dashdash;
           builder += boundary;
           builder += crlf;
