@@ -2,11 +2,13 @@ jQuery filedrop plugin - html5 drag desktop files into browser
 ==============================
 Forked from: https://github.com/weixiyen/jquery-filedrop
 
-jQuery filedrop uses the HTML5 File API to allow users
-to drag multiple files from desktop to the browser, uploading
-each file to a user-specified URL.
+This plugin provides the base framework for implementing drag and drop uploads to Amazon S3.
+Fetching S3 parameters needs to be done within the beforeEach callback which is triggered after each file is 'dropped'.
+The upload process will then await the triggering of the success callback to continue
+at which point you have fetched S3 specific params.
 
-filedrop uses HTML5 FileReader() to read file data.
+The main changes here compared to the original jquery-filedrop is the inclusion of callbacks to build each parameter.
+This allows us to build the request body dynamically (after the file has dropped) as shown below.
 
 Browser Support
 ---------------
