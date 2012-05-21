@@ -20,71 +20,71 @@ filedrop also allows users to define functions to handle the 'BrowserNotSupporte
 Usage Example
 ---------------
 
-  $('#dropzone').filedrop({
-      fallback_id: false,
-      queuefiles: 2,
-      maxfiles: 20,
-      maxfilesize: 20,
-      url: window.app.s3_proxy_url,
-      paramname: 'file',
-      data: {
-        Filename: function(filename) {
-          return filename;
+    $('#dropzone').filedrop({
+        fallback_id: false,
+        queuefiles: 2,
+        maxfiles: 20,
+        maxfilesize: 20,
+        url: window.app.s3_proxy_url,
+        paramname: 'file',
+        data: {
+          Filename: function(filename) {
+            return filename;
+          },
+          success_action_status: "201",
+          acl: function(filename){
+            return window.my_upload_handler.s3_request_params[filename].acl;
+          },
+          key: function(filename) {
+            return window.my_upload_handler.s3_request_params[filename].key;
+          },
+          'Content-Type': function(filename, file_type) {
+            return file_type;
+          },
+          signature: function(filename) {
+            return window.my_upload_handler.s3_request_params[filename].signature;
+          },
+          'Content-Disposition': function(filename) {
+            return window.my_upload_handler.s3_request_params[filename].content_disposition;
+          },
+          AWSAccessKeyId: function() {
+            return window.app.s3_access_key;
+          },
+          policy: function(filename) {
+            return window.my_upload_handler.s3_request_params[filename].policy;
+          }
         },
-        success_action_status: "201",
-        acl: function(filename){
-          return window.my_upload_handler.s3_request_params[filename].acl;
+        error: function(err, file) {
+          switch(err) {
+            case 'BrowserNotSupported':
+              console.log('Your Browser does not support html5 drag and drop')
+              break;
+            case 'TooManyFiles':
+              alert("Too many files were selected");
+              break;
+            case 'FileTooLarge':
+              alert("One or more files exceed the maximum individual file size for drag and drop, of up to " + self.max_file_size + "MB, To upload large files please use the upload button.");
+              break;
+            default:
+              alert("An unknown error occurred while attempting to perform your upload, if this continues please use the upload button instead.")
+              break;
+          }
         },
-        key: function(filename) {
-          return window.my_upload_handler.s3_request_params[filename].key;
+        dragOver: function(e) { },
+        dragLeave: function(e) { },
+        docOver: function(e) { },
+        docLeave: function(e) { },
+        drop: function(files, e) { },
+        uploadStarted: function(i, file, len, xhr_request){ },
+        uploadFinished: function(i, file, response, time) { },
+        progressUpdated: function(i, file, progress) { },
+        speedUpdated: function(i, file, speed){},
+        rename: function(name) {
+          return name;
         },
-        'Content-Type': function(filename, file_type) {
-          return file_type;
-        },
-        signature: function(filename) {
-          return window.my_upload_handler.s3_request_params[filename].signature;
-        },
-        'Content-Disposition': function(filename) {
-          return window.my_upload_handler.s3_request_params[filename].content_disposition;
-        },
-        AWSAccessKeyId: function() {
-          return window.app.s3_access_key;
-        },
-        policy: function(filename) {
-          return window.my_upload_handler.s3_request_params[filename].policy;
-        }
-      },
-      error: function(err, file) {
-        switch(err) {
-          case 'BrowserNotSupported':
-            console.log('Your Browser does not support html5 drag and drop')
-            break;
-          case 'TooManyFiles':
-            alert("Too many files were selected");
-            break;
-          case 'FileTooLarge':
-            alert("One or more files exceed the maximum individual file size for drag and drop, of up to " + self.max_file_size + "MB, To upload large files please use the upload button.");
-            break;
-          default:
-            alert("An unknown error occurred while attempting to perform your upload, if this continues please use the upload button instead.")
-            break;
-        }
-      },
-      dragOver: function(e) { },
-      dragLeave: function(e) { },
-      docOver: function(e) { },
-      docLeave: function(e) { },
-      drop: function(files, e) { },
-      uploadStarted: function(i, file, len, xhr_request){ },
-      uploadFinished: function(i, file, response, time) { },
-      progressUpdated: function(i, file, progress) { },
-      speedUpdated: function(i, file, speed){},
-      rename: function(name) {
-        return name;
-      },
-      beforeEach: function(file, callback) { },
-      afterAll: function(){}
-    });
+        beforeEach: function(file, callback) { },
+        afterAll: function(){}
+      });
 
 
 Queueing Usage Example
