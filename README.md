@@ -118,10 +118,13 @@ Due to a current limitation in S3 where we cannot set arbitrary response headers
 CORS (cross origin request scripting) is currently unsupported.
 To get around this we need to upload via a proxy configured to pass all requests through apart from CORS specific stuff.
 This means responding to an OPTIONS request to send back headers to indicate that CORS is allowed.
+
 More info:
 https://gist.github.com/833647
+
 Of course if Amazon eventually add support for CORS headers then this step can be removed,
 but based on the age of this thread I'm not getting my hopes up!
+
 https://forums.aws.amazon.com/thread.jspa?threadID=34281
 
 
