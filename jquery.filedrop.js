@@ -314,12 +314,14 @@
 
     function dragEnter(e) {
       clearTimeout(doc_leave_timer);
+      e.stopImmediatePropagation();
       e.preventDefault();
       opts.dragEnter(e);
     }
 
     function dragOver(e) {
       clearTimeout(doc_leave_timer);
+      e.stopImmediatePropagation();
       e.preventDefault();
       opts.docOver(e);
       opts.dragOver(e);
@@ -332,6 +334,7 @@
     }
 
     function docDrop(e) {
+      e.stopImmediatePropagation();
       e.preventDefault();
       opts.docLeave(e);
       return false;
@@ -339,6 +342,7 @@
 
     function docEnter(e) {
       clearTimeout(doc_leave_timer);
+      e.stopImmediatePropagation();
       e.preventDefault();
       opts.docEnter(e);
       return false;
@@ -346,6 +350,7 @@
 
     function docOver(e) {
       clearTimeout(doc_leave_timer);
+      e.stopPropagation();
       e.preventDefault();
       opts.docOver(e);
       return false;
@@ -353,6 +358,7 @@
 
     function docLeave(e) {
       doc_leave_timer = setTimeout(function() {
+        e.stopImmediatePropagation();
         opts.docLeave(e);
       }, 200);
     }
