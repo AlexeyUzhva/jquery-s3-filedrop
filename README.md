@@ -99,7 +99,18 @@ This is controlled via one of two parameters:
 
 Not setting a value for queuefiles will disable queueing.
 
+Gotchas
+-------
+
+In order to build the upload request we use Filereader to read binary objects into memory and encode for uploading.
+As a result this affects large file uploads which become memory intensive for the client.
+Even though S3 allows up to 5GB per object, take heed when setting the
+maxfilesize and queuefiles (number of simultaneous uploads) param.
+Filereader usage also means Safari and IE are currently unsupported.
+
+
 Contributions
 ---------------
+[weixiyen](https://github.com/weixiyen/jquery-filedrop) (Weixi Yen)
 [Reactor5](http://github.com/Reactor5/) (Brian Hicks)
 [jpb0104](http://github.com/jpb0104)
