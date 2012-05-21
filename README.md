@@ -82,7 +82,11 @@ Usage Example
         rename: function(name) {
           return name;
         },
-        beforeEach: function(file, callback) { },
+        beforeEach: function(file, callback) {
+          // this method will need to run callback() after fetching s3 params
+          // in order to trigger the upload
+          window.my_upload_handler.get_s3_request_params(file, callback);
+        },
         afterAll: function(){}
       });
 
