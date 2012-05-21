@@ -266,7 +266,7 @@
           xhr.setRequestHeader(k, v);
         });
         xhr.sendAsBinary(builder);
-        opts.uploadStarted(index, file, files_count);
+        opts.uploadStarted(index, file, files_count, xhr);
 
         xhr.onload = function() {
           if (xhr.responseText) {
