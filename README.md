@@ -1,5 +1,7 @@
 jQuery filedrop plugin - html5 drag desktop files into browser
 ==============================
+Forked from: https://github.com/weixiyen/jquery-filedrop
+
 jQuery filedrop uses the HTML5 File API to allow users
 to drag multiple files from desktop to the browser, uploading
 each file to a user-specified URL.
@@ -10,89 +12,79 @@ Browser Support
 ---------------
 Works on Chrome and Firefox 3.6+.
 
-Would love contribution for Safari support.
+Safari has issues due to its lack of Filereader support which is required in order to
+build the multi part request body in the format that S3 requires.
 
 filedrop also allows users to define functions to handle the 'BrowserNotSupported' error.
 
 Usage Example
 ---------------
 
-	$('#dropzone').filedrop({
-        fallback_id: 'upload_button'    // an identifier of a standard file input element
-		url: 'upload.php',				// upload handler, handles each file separately
-		paramname: 'userfile',			// POST parameter name used on serverside to reference file
-		data: {
-			param1: 'value1', 			// send POST variables
-			param2: function(){
-				return calculated_data; // calculate data at time of upload
-			},
-		},
-		headers: { 			// Send additional request headers
-			'header': 'value'
-		},
-		error: function(err, file) {
-			switch(err) {
-				case 'BrowserNotSupported':
-					alert('browser does not support html5 drag and drop')
-					break;
-				case 'TooManyFiles':
-					// user uploaded more than 'maxfiles'
-					break;
-				case 'FileTooLarge':
-					// program encountered a file whose size is greater than 'maxfilesize'
-					// FileTooLarge also has access to the file which was too large
-					// use file.name to reference the filename of the culprit file
-					break;
-				default:
-					break;
-			}
-		},
-		maxfiles: 25,
-		maxfilesize: 20, 	// max file size in MBs
-		dragOver: function() {
-			// user dragging files over #dropzone
-		},
-		dragLeave: function() {
-			// user dragging files out of #dropzone
-		},
-		docOver: function() {
-			// user dragging files anywhere inside the browser document window
-		},
-		docLeave: function() {
-			// user dragging files out of the browser document window
-		},
-		drop: function() {
-			// user drops file
-		},
-		uploadStarted: function(i, file, len){
-			// a file began uploading
-			// i = index => 0, 1, 2, 3, 4 etc
-			// file is the actual file of the index
-			// len = total files user dropped
-		},
-		uploadFinished: function(i, file, response, time) {
-			// response is the data you got back from server in JSON format.
-		},
-		progressUpdated: function(i, file, progress) {
-			// this function is used for large files and updates intermittently
-			// progress is the integer value of file being uploaded percentage to completion
-		},
-		speedUpdated: function(i, file, speed) {
-			// speed in kb/s
-		},
-		rename: function(name) {
-			// name in string format
-			// must return alternate name as string
-		},
-		beforeEach: function(file) {
-			// file is a file object
-			// return false to cancel upload
-		},
-		afterAll: function() {
-			// runs after all files have been uploaded or otherwise dealt with
-		}
-	});
-
+  $('#dropzone').filedrop({
+      fallback_id: false,
+      queuefiles: 2,
+      maxfiles: 20,
+      maxfilesize: 20,
+      url: window.app.s3_proxy_url,
+      paramname: 'file',
+      data: {
+        Filename: function(filename) {
+          return filename;
+        },
+        success_action_status: "201",
+        acl: function(filename){
+          return window.my_upload_handler.s3_request_params[filename].acl;
+        },
+        key: function(filename) {
+          return window.my_upload_handler.s3_request_params[filename].key;
+        },
+        'Content-Type': function(filename, file_type) {
+          return file_type;
+        },
+        signature: function(filename) {
+          return window.my_upload_handler.s3_request_params[filename].signature;
+        },
+        'Content-Disposition': function(filename) {
+          return window.my_upload_handler.s3_request_params[filename].content_disposition;
+        },
+        AWSAccessKeyId: function() {
+          return window.app.s3_access_key;
+        },
+        policy: function(filename) {
+          return window.my_upload_handler.s3_request_params[filename].policy;
+        }
+      },
+      error: function(err, file) {
+        switch(err) {
+          case 'BrowserNotSupported':
+            console.log('Your Browser does not support html5 drag and drop')
+            break;
+          case 'TooManyFiles':
+            alert("Too many files were selected");
+            break;
+          case 'FileTooLarge':
+            alert("One or more files exceed the maximum individual file size for drag and drop, of up to " + self.max_file_size + "MB, To upload large files please use the upload button.");
+            break;
+          default:
+            alert("An unknown error occurred while attempting to perform your upload, if this continues please use the upload button instead.")
+            break;
+        }
+      },
+      dragOver: function(e) { },
+      dragLeave: function(e) { },
+      docOver: function(e) { },
+      docLeave: function(e) { },
+      drop: function(files, e) { },
+      uploadStarted: function(i, file, len, xhr_request){ },
+      uploadFinished: function(i, file, response, time) { },
+      progressUpdated: function(i, file, progress) { },
+      speedUpdated: function(i, file, speed){},
+      rename: function(name) {
+        return name;
+      },
+      beforeEach: function(file, callback) { },
+      afterAll: function(){}
+    });
 
 
 Queueing Usage Example
